@@ -2,7 +2,7 @@
 # Aplikasi Penentu Gizi - React Native
 
 ```
-git clone https://github.com/pandz3rd/vinna-model-portofolio
+https://github.com/pandz3rd/penentu-gizi
 ```
 
 ```
