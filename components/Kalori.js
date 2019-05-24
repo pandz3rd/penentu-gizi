@@ -20,7 +20,6 @@ export default class Kalori extends React.Component {
       kaloriHitung: 0,
       kaloriHasil: '',
       kaloriWarning: '',
-      validInput: true,
     };
     this.hitungKalori = this.hitungKalori.bind(this);
   };
