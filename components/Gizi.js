@@ -202,32 +202,45 @@ export default class Gizi extends React.Component {
     var Laki = this.state.giziLaki;
     var Perempuan = this.state.giziPerempuan;
 
+    var hasilFuzzyBerat;
+    var hasilLinearBerat;
+    var hasilFuzzyUmur;
+    var hasilLinearUmur;
+    var hasilStatusGizi;
+    var hasilAlpha;
+    var hasilScoreKurva;
+    var hasilDeFuzzy;
+    var n;
+    var statusYangDihitung;
+    var hasilPresentase;
+    var hasilAkhir;
+
     if (valid == false) {
       this.setState({giziWarning: 'Input tidak valid'});
     } else {
       if (Berat <= 30 && Umur <= 60) {
 
-        var hasilFuzzyBerat = compareFuzzyBerat(Laki, Perempuan, Berat);
-        var hasilLinearBerat = hitungLinearBerat(hasilFuzzyBerat, Berat);
+        hasilFuzzyBerat = compareFuzzyBerat(Laki, Perempuan, Berat);
+        hasilLinearBerat = hitungLinearBerat(hasilFuzzyBerat, Berat);
 
-        var hasilFuzzyUmur = compareFuzzyUmur(Umur, Berat);
-        var hasilLinearUmur = hitungLinearUmur(hasilFuzzyUmur, Umur);
+        hasilFuzzyUmur = compareFuzzyUmur(Umur, Berat);
+        hasilLinearUmur = hitungLinearUmur(hasilFuzzyUmur, Umur);
 
-        var hasilStatusGizi = this.hitungMin(hasilLinearBerat, hasilLinearUmur);
+        hasilStatusGizi = this.hitungMin(hasilLinearBerat, hasilLinearUmur);
 
-        var hasilAlpha = this.hitungAlpha(hasilStatusGizi);
+        hasilAlpha = this.hitungAlpha(hasilStatusGizi);
 
-        var hasilScoreKurva = this.hitungScoreKurva(hasilStatusGizi);
+        hasilScoreKurva = this.hitungScoreKurva(hasilStatusGizi);
 
-        var hasilDeFuzzy = hitungDefuzzy(hasilScoreKurva);
+        hasilDeFuzzy = hitungDefuzzy(hasilScoreKurva);
 
-        var n = hasilDeFuzzy / hasilAlpha;
+        n = hasilDeFuzzy / hasilAlpha;
 
-        var statusYangDihitung = compareYangDihitung(n);
+        statusYangDihitung = compareYangDihitung(n);
 
-        var hasilPresentase = this.hitungPersentase(statusYangDihitung, n);
+        hasilPresentase = this.hitungPersentase(statusYangDihitung, n);
 
-        var hasilAkhir = this.fixPersen(hasilPresentase);
+        hasilAkhir = this.fixPersen(hasilPresentase);
 
         this.setState({
           giziHitung: Math.round(hasilAkhir.persen),

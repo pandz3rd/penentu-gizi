@@ -8,8 +8,11 @@ import { akarKuadrat } from '../modules/AkarKuadrat';
 import { matriksTernormalisasi } from '../modules/MatriksTernormalisasi';
 import { compareNutrisiSeimbang } from '../modules/CompareNutrisiSeimbang';
 import { hitungBobot } from '../modules/HitungBobot';
-import { idealPositif } from '../modules/IdealPositif';
+import { ideal } from '../modules/Ideal';
 import { convertMatriks } from '../modules/ConvertMatriks';
+import { hitungJarak } from '../modules/HitungJarak';
+import { hitungPrefensi } from '../modules/HitungPrefensi';
+import { menentukanMenu } from '../modules/MenentukanMenu';
 
 export default class Nutrisi extends React.Component {
   static navigationOptions = {
@@ -40,9 +43,6 @@ export default class Nutrisi extends React.Component {
 
   clearingData = () => {
     this.setState({
-      nutrisiUmur: null,
-      nutrisiGizi: null,
-      nutrisiKalori: null,
       nutrisiEnergi: '-',
       nutrisiProtein: '-',
       nutrisiLemak: '-',
@@ -66,7 +66,12 @@ export default class Nutrisi extends React.Component {
     var hasilBobot;
     var keputusanTernormalisasi;
     var hasilIdealPositif;
+    var hasilIdealNegatif;
     var hasilConvert;
+    var hasilJarakPositif;
+    var hasilJarakNegatif;
+    var hasilPrefensi;
+    var prefensiTerbesar;
 
     var valid = validateInputNutrisi(Umur, Kalori);
 
@@ -74,18 +79,28 @@ export default class Nutrisi extends React.Component {
       this.setState({ nutrisiWarning: 'Umur atau Kalori yang anda masukan tidak valid.' });
     } else {
       if (Umur <= 61 && Kalori <= 3000) {
-        // Perhitungan
         totalKriteria = hitungTotalKriteria(tabelKriteriaNutrisi);
         hasilAkarKuadrat = akarKuadrat(totalKriteria);
 
         tabelTernormalisasi = matriksTernormalisasi(tabelKriteriaNutrisi, hasilAkarKuadrat, "Bagi");
-        // console.log('Tabel ternormal: ', tabelTernormalisasi)
 
         nutrisiSeimbang = compareNutrisiSeimbang(Umur);
-        // console.log('Keseimbangan: ', nutrisiSeimbang)
 
         hasilBobot = hitungBobot(Umur, Gizi, Kalori, nutrisiSeimbang);
-        // console.log('Bobot: ', hasilBobot)
+
+        keputusanTernormalisasi = matriksTernormalisasi(tabelTernormalisasi, hasilBobot, "Kali")
+
+        hasilIdealPositif = ideal(keputusanTernormalisasi, 'Positif');
+        hasilIdealNegatif = ideal(keputusanTernormalisasi, 'Negatif');
+
+        hasilConvert = convertMatriks(keputusanTernormalisasi);
+
+        hasilJarakPositif = hitungJarak(hasilConvert, hasilIdealPositif);
+        hasilJarakNegatif = hitungJarak(hasilConvert, hasilIdealNegatif);
+
+        hasilPrefensi = hitungPrefensi(hasilJarakPositif, hasilJarakNegatif);
+
+        prefensiTerbesar = Math.max.apply(Math, hasilPrefensi)
 
         this.setState({
           nutrisiEnergi: hasilBobot[0],
@@ -93,16 +108,9 @@ export default class Nutrisi extends React.Component {
           nutrisiLemak: hasilBobot[2],
           nutrisiKarbohidrat: hasilBobot[3],
           nutrisiVitamin: hasilBobot[4],
+          nutrisiMenu: menentukanMenu(hasilPrefensi),
+          nutrisiPrefensi: prefensiTerbesar.toFixed(3)
         });
-
-        keputusanTernormalisasi = matriksTernormalisasi(tabelTernormalisasi, hasilBobot, "Kali")
-        console.log('Keputusan: ', keputusanTernormalisasi)
-
-        hasilIdealPositif = idealPositif(keputusanTernormalisasi);
-        // console.log('Ideal positif: ', hasilIdealPositif)
-
-        hasilConvert = convertMatriks(keputusanTernormalisasi);
-        console.log('Convert: ', hasilConvert)
 
       } else {
         this.setState({nutrisiWarning: 'Umur atau Kalori yang anda masukan tidak valid'});

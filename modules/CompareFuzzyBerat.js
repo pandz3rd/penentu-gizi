@@ -249,7 +249,7 @@ export const compareFuzzyBerat = (Laki, Perempuan, Berat) => {
         hasilFuzzy = [fuzzy1, fuzzy2];
         return hasilFuzzy;
 
-      } else if (Berat > 26 && Berat <= 28) {
+      } else if (Berat >= 26 && Berat <= 30) {
         fuzzy1.himpunan = 'Sangat Gemuk';
         fuzzy1.batasBawah = 22;
         fuzzy1.titikTengah = 28;
